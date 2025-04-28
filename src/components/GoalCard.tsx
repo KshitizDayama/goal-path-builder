@@ -14,6 +14,14 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, index }) => {
   const completion = calculateCompletion(goal.tasks, goal.milestones);
   const hasUnlockedBadges = goal.badges?.some(badge => badge.unlocked) || false;
   
+  // Calculate remaining milestones
+  const totalMilestones = goal.milestones.length;
+  const completedMilestones = goal.milestones.filter(m => m.completed).length;
+  const remainingMilestones = totalMilestones - completedMilestones;
+  const showMilestoneReminder = totalMilestones > 0 && 
+                               (completedMilestones / totalMilestones) >= 0.7 && 
+                               remainingMilestones > 0;
+  
   return (
     <Link 
       to={`/goal/${index}`} 
@@ -68,6 +76,12 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, index }) => {
             className="h-2"
           />
         </div>
+        
+        {showMilestoneReminder && (
+          <div className="mt-3 text-sm text-primary font-medium">
+            Only {remainingMilestones} milestone{remainingMilestones !== 1 ? 's' : ''} left to knock off this goal. Let's crush it!
+          </div>
+        )}
       </div>
     </Link>
   );

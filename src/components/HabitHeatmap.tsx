@@ -1,6 +1,7 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { format, subDays } from 'date-fns';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 interface HabitHeatmapProps {
   sessions: {
@@ -10,6 +11,8 @@ interface HabitHeatmapProps {
 }
 
 const HabitHeatmap: React.FC<HabitHeatmapProps> = ({ sessions }) => {
+  const [isVisible, setIsVisible] = useState(true);
+
   // Generate the last 7 days
   const last7Days = Array.from({ length: 7 }, (_, i) => {
     const date = subDays(new Date(), 6 - i);
@@ -31,25 +34,36 @@ const HabitHeatmap: React.FC<HabitHeatmapProps> = ({ sessions }) => {
 
   return (
     <div className="mt-4">
-      <h3 className="text-sm font-medium mb-2 text-secondary-foreground">7-Day Activity</h3>
-      <div className="flex justify-between">
-        {last7Days.map((day) => {
-          const count = sessionMap[day] || 0;
-          return (
-            <div key={day} className="flex flex-col items-center">
-              <div 
-                className={`w-8 h-8 rounded-md ${getIntensity(count)} flex items-center justify-center transition-colors`}
-                title={`${count} activities on ${format(new Date(day), 'MMM d')}`}
-              >
-                {count > 0 && <span className="text-xs font-medium text-foreground">{count}</span>}
-              </div>
-              <span className="text-[10px] mt-1 text-secondary-foreground">
-                {format(new Date(day), 'dd')}
-              </span>
-            </div>
-          );
-        })}
+      <div className="flex justify-between items-center mb-2">
+        <h3 className="text-sm font-medium text-secondary-foreground">7-Day Activity</h3>
+        <button 
+          onClick={() => setIsVisible(!isVisible)}
+          className="text-secondary-foreground hover:text-foreground"
+        >
+          {isVisible ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+        </button>
       </div>
+      
+      {isVisible && (
+        <div className="flex justify-between">
+          {last7Days.map((day) => {
+            const count = sessionMap[day] || 0;
+            return (
+              <div key={day} className="flex flex-col items-center">
+                <div 
+                  className={`w-8 h-8 rounded-md ${getIntensity(count)} flex items-center justify-center transition-colors`}
+                  title={`${count} activities on ${format(new Date(day), 'MMM d')}`}
+                >
+                  {count > 0 && <span className="text-xs font-medium text-foreground">{count}</span>}
+                </div>
+                <span className="text-[10px] mt-1 text-secondary-foreground">
+                  {format(new Date(day), 'dd')}
+                </span>
+              </div>
+            );
+          })}
+        </div>
+      )}
     </div>
   );
 };
