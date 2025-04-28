@@ -1,8 +1,9 @@
 
 import React from 'react';
 import { Link } from 'react-router-dom';
-import { calculateCompletion, formatDate } from '../utils/helpers';
+import { calculateCompletion, formatDate, formatConsistencyScore } from '../utils/helpers';
 import { Goal } from '../types';
+import { Progress } from '@/components/ui/progress';
 
 interface GoalCardProps {
   goal: Goal;
@@ -11,6 +12,7 @@ interface GoalCardProps {
 
 const GoalCard: React.FC<GoalCardProps> = ({ goal, index }) => {
   const completion = calculateCompletion(goal.tasks, goal.milestones);
+  const hasUnlockedBadges = goal.badges?.some(badge => badge.unlocked) || false;
   
   return (
     <Link 
@@ -22,7 +24,7 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, index }) => {
         <div className="flex justify-between items-start mb-3">
           <h3 className="text-lg font-semibold truncate">{goal.name}</h3>
           <span className="inline-flex items-center justify-center px-2 py-1 text-xs font-bold rounded bg-primary/20 text-primary">
-            {goal.streak} days
+            {formatConsistencyScore(goal.streak)}
           </span>
         </div>
         
@@ -36,17 +38,35 @@ const GoalCard: React.FC<GoalCardProps> = ({ goal, index }) => {
           <p className="text-sm text-secondary-foreground line-clamp-2">{goal.why}</p>
         </div>
         
+        <div className="mb-3">
+          <div className="text-xs text-muted-foreground mb-1">Total Time</div>
+          <div className="text-sm">{goal.totalTimeSpent || 0} minutes</div>
+        </div>
+        
+        {hasUnlockedBadges && (
+          <div className="mb-3 flex flex-wrap gap-1">
+            {goal.badges?.filter(badge => badge.unlocked).slice(0, 3).map(badge => (
+              <span key={badge.id} className="text-lg" title={badge.name}>
+                {badge.icon}
+              </span>
+            ))}
+            {(goal.badges?.filter(badge => badge.unlocked).length || 0) > 3 && (
+              <span className="text-xs bg-primary/20 text-primary px-1.5 py-0.5 rounded">
+                +{(goal.badges?.filter(badge => badge.unlocked).length || 0) - 3} more
+              </span>
+            )}
+          </div>
+        )}
+        
         <div>
           <div className="flex justify-between text-xs text-muted-foreground mb-1">
             <span>Progress</span>
             <span>{completion}%</span>
           </div>
-          <div className="w-full bg-muted rounded-full h-2">
-            <div 
-              className="bg-primary h-2 rounded-full" 
-              style={{ width: `${completion}%` }}
-            ></div>
-          </div>
+          <Progress
+            value={completion}
+            className="h-2"
+          />
         </div>
       </div>
     </Link>

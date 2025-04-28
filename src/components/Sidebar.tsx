@@ -1,13 +1,14 @@
 
 import React from 'react';
 import { NavLink } from 'react-router-dom';
-import { Target, Package, BarChart } from 'lucide-react';
+import { Target, Package, BarChart, BookText } from 'lucide-react';
 
 const Sidebar: React.FC = () => {
   const navItems = [
     { icon: Target, path: '/goals', label: 'Goals' },
     { icon: Package, path: '/projects', label: 'Projects' },
-    { icon: BarChart, path: '/analytics', label: 'Analytics' }
+    { icon: BarChart, path: '/analytics', label: 'Analytics' },
+    { icon: BookText, path: '/rulebook', label: 'Rulebook' }
   ];
 
   return (

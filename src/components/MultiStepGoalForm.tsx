@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { generateId } from '../utils/helpers';
 import { Goal, Task, Milestone } from '../types';
+import { getDefaultBadges } from '../utils/gamification';
 
 interface MultiStepGoalFormProps {
   onAddGoal: (goal: Goal) => void;
@@ -50,6 +51,13 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
       milestones: filteredMilestones,
       reflections: {},
       streak: 0,
+      // New fields for gamification
+      totalTimeSpent: 0,
+      xp: 0,
+      level: 1,
+      badges: getDefaultBadges(),
+      habitChain: 0,
+      timerSessions: []
     };
     
     onAddGoal(newGoal);
@@ -72,7 +80,7 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
       <div className="mb-8">
         <button 
           onClick={() => setIsFormOpen(true)}
-          className="w-full py-4 bg-blue-500 hover:bg-blue-600 text-white rounded-lg shadow-md transition-colors flex items-center justify-center space-x-2"
+          className="w-full py-4 bg-primary hover:bg-primary/90 text-primary-foreground rounded-lg shadow-md transition-colors flex items-center justify-center space-x-2"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-5 h-5">
             <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -84,12 +92,12 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6 mb-8">
+    <div className="bg-card rounded-lg shadow-md p-6 mb-8">
       <div className="flex justify-between items-center mb-4">
         <h2 className="text-xl font-semibold">Create New Goal</h2>
         <button 
           onClick={() => setIsFormOpen(false)} 
-          className="text-gray-500 hover:text-gray-700"
+          className="text-secondary-foreground hover:text-foreground"
           aria-label="Close form"
         >
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
@@ -103,8 +111,8 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
         {[1, 2, 3].map((num) => (
           <div key={num} className="flex-1 flex flex-col items-center">
             <div className={`w-8 h-8 flex items-center justify-center rounded-full border-2 ${
-              step === num ? 'border-blue-500 bg-blue-500 text-white' : 
-              step > num ? 'border-blue-500 bg-white text-blue-500' : 'border-gray-300 bg-white text-gray-500'
+              step === num ? 'border-primary bg-primary text-primary-foreground' : 
+              step > num ? 'border-primary bg-background text-primary' : 'border-border bg-background text-secondary-foreground'
             }`}>
               {step > num ? (
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="w-4 h-4">
@@ -112,7 +120,7 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
                 </svg>
               ) : num}
             </div>
-            <div className={`text-xs mt-1 ${step >= num ? 'text-blue-500' : 'text-gray-500'}`}>
+            <div className={`text-xs mt-1 ${step >= num ? 'text-primary' : 'text-secondary-foreground'}`}>
               Step {num}
             </div>
           </div>
@@ -124,34 +132,34 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Name, Deadline & Why</h3>
             <div>
-              <label htmlFor="goal-name" className="block text-sm font-medium text-gray-700 mb-1">Goal Name</label>
+              <label htmlFor="goal-name" className="block text-sm font-medium text-secondary-foreground mb-1">Goal Name</label>
               <input
                 id="goal-name"
                 type="text"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
             <div>
-              <label htmlFor="goal-deadline" className="block text-sm font-medium text-gray-700 mb-1">Deadline</label>
+              <label htmlFor="goal-deadline" className="block text-sm font-medium text-secondary-foreground mb-1">Deadline</label>
               <input
                 id="goal-deadline"
                 type="date"
                 value={deadline}
                 onChange={(e) => setDeadline(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                 required
               />
             </div>
             <div>
-              <label htmlFor="goal-why" className="block text-sm font-medium text-gray-700 mb-1">Why (Your Motivation)</label>
+              <label htmlFor="goal-why" className="block text-sm font-medium text-secondary-foreground mb-1">Why (Your Motivation)</label>
               <textarea
                 id="goal-why"
                 value={why}
                 onChange={(e) => setWhy(e.target.value)}
-                className="w-full p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500 h-24"
+                className="w-full p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary h-24"
                 required
               />
             </div>
@@ -159,7 +167,7 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
               <button
                 type="button"
                 onClick={nextStep}
-                className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition-colors"
+                className="bg-primary text-primary-foreground rounded px-4 py-2 hover:bg-primary/90 transition-colors"
                 disabled={!name || !deadline || !why}
               >
                 Next: Step 2 of 3
@@ -178,14 +186,14 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
                     type="text"
                     value={task.text}
                     onChange={(e) => handleTaskChange(task.id, e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder={`Task ${index + 1}`}
                   />
                   {index === tasks.length - 1 && (
                     <button
                       type="button"
                       onClick={handleAddTask}
-                      className="p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200"
+                      className="p-2 bg-muted rounded-md text-secondary-foreground hover:bg-muted/80"
                       title="Add another task"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -200,14 +208,14 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
               <button
                 type="button"
                 onClick={prevStep}
-                className="bg-gray-200 text-gray-800 rounded px-4 py-2 hover:bg-gray-300 transition-colors"
+                className="bg-muted text-foreground rounded px-4 py-2 hover:bg-muted/80 transition-colors"
               >
                 Back
               </button>
               <button
                 type="button"
                 onClick={nextStep}
-                className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition-colors"
+                className="bg-primary text-primary-foreground rounded px-4 py-2 hover:bg-primary/90 transition-colors"
                 disabled={tasks.every(task => task.text.trim() === '')}
               >
                 Next: Step 3 of 3
@@ -219,7 +227,7 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
         {step === 3 && (
           <div className="space-y-4">
             <h3 className="text-lg font-medium">Add Milestones</h3>
-            <p className="text-sm text-gray-500">Create small milestones to track your progress</p>
+            <p className="text-sm text-secondary-foreground">Create small milestones to track your progress</p>
             <div className="space-y-3">
               {milestones.map((milestone, index) => (
                 <div key={milestone.id} className="flex items-center space-x-2">
@@ -227,14 +235,14 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
                     type="text"
                     value={milestone.text}
                     onChange={(e) => handleMilestoneChange(milestone.id, e.target.value)}
-                    className="flex-1 p-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 p-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
                     placeholder={`Milestone ${index + 1}`}
                   />
                   {index === milestones.length - 1 && (
                     <button
                       type="button"
                       onClick={handleAddMilestone}
-                      className="p-2 bg-gray-100 rounded-md text-gray-600 hover:bg-gray-200"
+                      className="p-2 bg-muted rounded-md text-secondary-foreground hover:bg-muted/80"
                       title="Add another milestone"
                     >
                       <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-5 h-5">
@@ -249,13 +257,13 @@ const MultiStepGoalForm: React.FC<MultiStepGoalFormProps> = ({ onAddGoal }) => {
               <button
                 type="button"
                 onClick={prevStep}
-                className="bg-gray-200 text-gray-800 rounded px-4 py-2 hover:bg-gray-300 transition-colors"
+                className="bg-muted text-foreground rounded px-4 py-2 hover:bg-muted/80 transition-colors"
               >
                 Back
               </button>
               <button
                 type="submit"
-                className="bg-blue-500 text-white rounded px-4 py-2 hover:bg-blue-600 transition-colors"
+                className="bg-primary text-primary-foreground rounded px-4 py-2 hover:bg-primary/90 transition-colors"
               >
                 Finish & Save Goal
               </button>

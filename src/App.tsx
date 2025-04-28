@@ -9,6 +9,7 @@ import Goals from "./pages/Goals";
 import GoalDetail from "./pages/GoalDetail";
 import Projects from "./pages/Projects";
 import Analytics from "./pages/Analytics";
+import Rulebook from "./pages/Rulebook";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
             <Route path="goal/:id" element={<GoalDetail />} />
             <Route path="projects" element={<Projects />} />
             <Route path="analytics" element={<Analytics />} />
+            <Route path="rulebook" element={<Rulebook />} />
           </Route>
           <Route path="*" element={<NotFound />} />
         </Routes>
